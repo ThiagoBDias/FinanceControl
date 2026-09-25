@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Permite que FinanceControl.Domain.Tests exercite os membros
+         internal (factories de Transaction, RegisterTransferOut/In em
+         Account) para testar os invariantes diretamente. -->
+    <InternalsVisibleTo Include="FinanceControl.Domain.Tests" />
+  </ItemGroup>
+
+</Project>
