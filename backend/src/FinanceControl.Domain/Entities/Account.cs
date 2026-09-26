@@ -46,6 +46,13 @@ public sealed class Account
     /// </summary>
     private bool IsLiability => Type == AccountType.CreditCard;
 
+    // EF Core cannot bind owned CreditCardSettings constructor parameters.
+    // This constructor is only used to materialize persisted accounts.
+    private Account()
+    {
+        Name = string.Empty;
+    }
+
     private Account(
         Guid id,
         Guid ownerScopeId,

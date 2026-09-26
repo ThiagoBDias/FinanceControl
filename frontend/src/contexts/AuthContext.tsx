@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function login(email: string, password: string) {
     const response = await api.post<AuthResponse>("/auth/login", { email, password });
-    const nextToken = response.data.token ?? response.data.accessToken;
+    const nextToken = response.data.accessToken;
     if (!nextToken) throw new Error("A API não retornou o token de acesso.");
     localStorage.setItem("financecontrol_token", nextToken);
     setToken(nextToken);

@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "D9XzOGjay40=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Domain\\FinanceControl.Domain.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ticot\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.25\\microsoft.netcore.app.ref.8.0.25.nupkg.sha512",
+    "C:\\Users\\ticot\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.25\\microsoft.windowsdesktop.app.ref.8.0.25.nupkg.sha512",
+    "C:\\Users\\ticot\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.25\\microsoft.aspnetcore.app.ref.8.0.25.nupkg.sha512"
+  ],
+  "logs": []
+}

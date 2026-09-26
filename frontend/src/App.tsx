@@ -18,7 +18,7 @@ export default function App(){
   <Route path="/login" element={token?<Navigate to="/" replace/>:<Login/>}/>
   <Route path="/register" element={token?<Navigate to="/" replace/>:<Register/>}/>
   <Route element={<ProtectedRoute/>}><Route element={<AppLayout/>}>
-    <Route index element={<Dashboard/>}/><Route path="/accounts" element={<Accounts/>}/><Route path="/transactions" element={<Transactions/>}/>
+    <Route index element={<Navigate to="/dashboard" replace/>}/><Route path="/dashboard" element={<Dashboard/>}/><Route path="/accounts" element={<Accounts/>}/><Route path="/transactions" element={<Transactions/>}/>
     <Route path="/categories" element={<Categories/>}/><Route path="/cards" element={<Cards/>}/><Route path="/invoices" element={<Invoices/>}/><Route path="/budgets" element={<Budgets/>}/>
   </Route></Route>
   <Route path="*" element={<Navigate to={token?"/":"/login"} replace/>}/>

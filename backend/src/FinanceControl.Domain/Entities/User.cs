@@ -16,6 +16,14 @@ public sealed class User
     public DateTime CreatedAt { get; }
     public DateTime UpdatedAt { get; }
 
+    // EF Core cannot bind the owned Email value object in the domain constructor.
+    // This constructor is only used when materializing persisted users.
+    private User()
+    {
+        Name = string.Empty;
+        Email = null!;
+    }
+
     private User(Guid id, string name, Email email, DateTime createdAt)
     {
         Id = id;

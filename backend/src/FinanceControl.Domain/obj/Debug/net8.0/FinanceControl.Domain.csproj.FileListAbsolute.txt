@@ -1,0 +1,12 @@
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Domain\bin\Debug\net8.0\FinanceControl.Domain.deps.json
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Domain\bin\Debug\net8.0\FinanceControl.Domain.dll
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Domain\bin\Debug\net8.0\FinanceControl.Domain.pdb
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Domain\obj\Debug\net8.0\FinanceControl.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Domain\obj\Debug\net8.0\FinanceControl.Domain.AssemblyInfoInputs.cache
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Domain\obj\Debug\net8.0\FinanceControl.Domain.AssemblyInfo.cs
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Domain\obj\Debug\net8.0\FinanceControl.Domain.csproj.CoreCompileInputs.cache
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Domain\obj\Debug\net8.0\FinanceControl.Domain.sourcelink.json
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Domain\obj\Debug\net8.0\FinanceControl.Domain.dll
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Domain\obj\Debug\net8.0\refint\FinanceControl.Domain.dll
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Domain\obj\Debug\net8.0\FinanceControl.Domain.pdb
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Domain\obj\Debug\net8.0\ref\FinanceControl.Domain.dll

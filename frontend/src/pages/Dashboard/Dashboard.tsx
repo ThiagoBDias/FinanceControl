@@ -1,24 +1,34 @@
-import { useEffect, useState } from "react";
-import api from "../../services/api";
+import { useCallback, useEffect, useState } from "react";
+import api, { getErrorMessage } from "../../services/api";
 import type { DashboardData } from "../../types";
-import { PageHeader } from "../../components/PageHeader";
+import PageHeader from "../../components/PageHeader";
 import StatCard from "../../components/StatCard";
 import Loading from "../../components/Loading";
 import EmptyState from "../../components/EmptyState";
+import { onFinanceDataChanged } from "../../services/financeEvents";
 
-const money=(v:number|undefined)=>new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v??0);
-
-export default function Dashboard(){
- const [data,setData]=useState<DashboardData|null>(null); const [loading,setLoading]=useState(true); const [error,setError]=useState("");
- const now=new Date();
- useEffect(()=>{ api.get<DashboardData>(`/dashboard?year=${now.getFullYear()}&month=${now.getMonth()+1}`).then(r=>setData(r.data)).catch(()=>setError("Não foi possível carregar o dashboard.")).finally(()=>setLoading(false)); },[]);
- if(loading)return <Loading/>;
- const balance=data?.balance??data?.totalBalance??0, income=data?.income??data?.totalIncome??0, expenses=data?.expenses??data?.totalExpenses??0, net=data?.net??data?.result??income-expenses;
- return <><PageHeader title="Dashboard" description="Veja para onde seu dinheiro está indo."/>
- {error&&<div className="alert error">{error} Verifique se a API está rodando.</div>}
- <div className="stats-grid"><StatCard label="Saldo" value={money(balance)} icon="R$" tone="purple"/><StatCard label="Entradas" value={money(income)} icon="↑" tone="green"/><StatCard label="Gastos" value={money(expenses)} icon="↓" tone="red"/><StatCard label="Resultado" value={money(net)} icon="=" tone="blue"/></div>
- <div className="dashboard-grid">
-  <section className="panel"><div className="panel-head"><h2>Gastos por categoria</h2></div>{data?.expensesByCategory?.length?<div className="category-list">{data.expensesByCategory.map((x,i)=><div className="category-row" key={i}><span>{x.name}</span><strong>{money(x.amount)}</strong></div>)}</div>:<EmptyState title="Sem dados ainda" description="Os gastos por categoria aparecerão aqui."/>}</section>
-  <section className="panel"><div className="panel-head"><h2>Visão rápida</h2></div><div className="quick-list"><div><span>Contas</span><strong>{data?.accounts?.length??"—"}</strong></div><div><span>Lançamentos recentes</span><strong>{data?.recentTransactions?.length??"—"}</strong></div><div><span>Período</span><strong>{String(now.getMonth()+1).padStart(2,"0")}/{now.getFullYear()}</strong></div></div></section>
- </div></>;
+const money = (value: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
+export default function Dashboard() {
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const now = new Date();
+  const load = useCallback(async () => {
+    setError("");
+    try { const { data: result } = await api.get<DashboardData>(`/dashboard?year=${now.getFullYear()}&month=${now.getMonth() + 1}`); setData(result); }
+    catch (err) { setError(getErrorMessage(err)); }
+    finally { setLoading(false); }
+  }, [now.getFullYear(), now.getMonth()]);
+  useEffect(() => { void load(); return onFinanceDataChanged(() => { void load(); }); }, [load]);
+  return <><PageHeader title="Dashboard" description="Resumo da sua vida financeira no mês."/>
+    {error && <div className="alert error">{error}</div>}{loading ? <Loading/> : data ? <>
+      <div className="stats-grid"><StatCard label="Saldo total" value={money(data.netBalance)} icon="R$"/><StatCard label="Entradas" value={money(data.income)} icon="↑" tone="green"/><StatCard label="Despesas" value={money(data.expenses)} icon="↓" tone="red"/><StatCard label="Resultado do mês" value={money(data.result)} icon="=" tone="blue"/></div>
+      <div className="dashboard-grid">
+        <section className="panel"><div className="panel-head"><h2>Principais gastos por categoria</h2></div>{data.expensesByCategory.length ? data.expensesByCategory.map((item, index) => <div className="category-row" key={item.categoryId ?? `${item.categoryName}-${index}`}><span>{item.categoryName}</span><strong>{money(item.amount)}</strong></div>) : <EmptyState title="Sem despesas no período" description="Os gastos por categoria aparecerão aqui."/>}</section>
+        <section className="panel"><div className="panel-head"><h2>Visão geral</h2></div><div className="quick-list"><div><span>Contas</span><strong>{data.accounts.length}</strong></div><div><span>Cartões</span><strong>{data.creditCards.length}</strong></div><div><span>Faturas</span><strong>{data.invoices.length}</strong></div><div><span>Orçamentos</span><strong>{data.budgets.length}</strong></div></div></section>
+      </div>
+      <div className="dashboard-grid"><section className="panel"><div className="panel-head"><h2>Cartões</h2></div>{data.creditCards.length ? data.creditCards.map(card => <div className="category-row" key={card.accountId}><span>{card.name}</span><strong>{money(card.usedAmount)} / {money(card.creditLimit)}</strong></div>) : <EmptyState title="Nenhum cartão" description="Seus cartões aparecerão aqui."/>}</section>
+        <section className="panel"><div className="panel-head"><h2>Orçamentos do mês</h2></div>{data.budgets.length ? data.budgets.map(budget => <div className="category-row" key={budget.categoryId}><span>{budget.categoryName}</span><strong>{money(budget.spentAmount)} / {money(budget.limitAmount)}</strong></div>) : <EmptyState title="Nenhum orçamento" description="Os orçamentos do mês aparecerão aqui."/>}</section></div>
+    </> : <div className="panel"><EmptyState title="Resumo indisponível" description="A API não retornou dados do dashboard."/></div>}
+  </>;
 }

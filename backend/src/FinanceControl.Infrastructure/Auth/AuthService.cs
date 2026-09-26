@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using FinanceControl.Application.DTOs;
 using FinanceControl.Application.Interfaces;
+using FinanceControl.Application.Validators;
 using FinanceControl.Domain.Entities;
 using FinanceControl.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
@@ -104,10 +105,19 @@ public sealed class AuthService : IAuthService
     private static void ValidateRequest(string name, string email, string password)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Nome é obrigatório.");
+            throw new RequestValidationException(new[]
+            {
+                new ValidationError(nameof(name), "Nome é obrigatório.")
+            });
         if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
-            throw new ArgumentException("E-mail inválido.");
+            throw new RequestValidationException(new[]
+            {
+                new ValidationError(nameof(email), "E-mail inválido.")
+            });
         if (string.IsNullOrWhiteSpace(password) || password.Length < 8)
-            throw new ArgumentException("A senha deve possuir pelo menos 8 caracteres.");
+            throw new RequestValidationException(new[]
+            {
+                new ValidationError(nameof(password), "A senha deve possuir pelo menos 8 caracteres.")
+            });
     }
 }

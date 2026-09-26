@@ -1,0 +1,359 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.API\\FinanceControl.API.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.API\\FinanceControl.API.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.API\\FinanceControl.API.csproj",
+        "projectName": "FinanceControl.API",
+        "projectPath": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.API\\FinanceControl.API.csproj",
+        "packagesPath": "C:\\Users\\ticot\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.API\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\NuGet.Config",
+          "C:\\Users\\ticot\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Application\\FinanceControl.Application.csproj": {
+                "projectPath": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Application\\FinanceControl.Application.csproj"
+              },
+              "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Infrastructure\\FinanceControl.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Infrastructure\\FinanceControl.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.6.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Application\\FinanceControl.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Application\\FinanceControl.Application.csproj",
+        "projectName": "FinanceControl.Application",
+        "projectPath": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Application\\FinanceControl.Application.csproj",
+        "packagesPath": "C:\\Users\\ticot\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Application\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\NuGet.Config",
+          "C:\\Users\\ticot\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Domain\\FinanceControl.Domain.csproj": {
+                "projectPath": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Domain\\FinanceControl.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Domain\\FinanceControl.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Domain\\FinanceControl.Domain.csproj",
+        "projectName": "FinanceControl.Domain",
+        "projectPath": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Domain\\FinanceControl.Domain.csproj",
+        "packagesPath": "C:\\Users\\ticot\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\NuGet.Config",
+          "C:\\Users\\ticot\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Infrastructure\\FinanceControl.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Infrastructure\\FinanceControl.Infrastructure.csproj",
+        "projectName": "FinanceControl.Infrastructure",
+        "projectPath": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Infrastructure\\FinanceControl.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\ticot\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\NuGet.Config",
+          "C:\\Users\\ticot\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Application\\FinanceControl.Application.csproj": {
+                "projectPath": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Application\\FinanceControl.Application.csproj"
+              },
+              "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Domain\\FinanceControl.Domain.csproj": {
+                "projectPath": "C:\\Users\\ticot\\OneDrive\\Documentos\\GitHub\\FinanceControl\\backend\\src\\FinanceControl.Domain\\FinanceControl.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.10, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.10, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.10, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.10, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[8.0.10, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

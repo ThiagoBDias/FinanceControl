@@ -1,7 +1,12 @@
 import axios from "axios";
 
+const configuredApiUrl = import.meta.env.VITE_API_URL?.replace(/\/+$/, "");
+const apiBaseUrl = configuredApiUrl
+  ? configuredApiUrl.endsWith("/api") ? configuredApiUrl : `${configuredApiUrl}/api`
+  : "/api";
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "https://localhost:5001/api",
+  baseURL: apiBaseUrl,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -26,9 +31,10 @@ api.interceptors.response.use(
 
 export function getErrorMessage(error: unknown, fallback = "Não foi possível concluir a operação.") {
   if (axios.isAxiosError(error)) {
-    const data = error.response?.data as { message?: string; title?: string; errors?: Record<string, string[]> } | undefined;
+    const data = error.response?.data as { message?: string; detail?: string; title?: string; errors?: Record<string, string[]>; validation?: { errors?: Array<{ message?: string }> } } | undefined;
     if (data?.message) return data.message;
-    if (data?.title) return data.title;
+    if (data?.detail) return data.detail;
+    if (data?.validation?.errors?.length) return data.validation.errors.map((item) => item.message).filter(Boolean).join(" ");
     if (data?.errors) {
       const first = Object.values(data.errors).flat()[0];
       if (first) return first;

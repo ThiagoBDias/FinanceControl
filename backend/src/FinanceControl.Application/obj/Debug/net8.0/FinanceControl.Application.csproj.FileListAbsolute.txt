@@ -1,0 +1,16 @@
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Application\bin\Debug\net8.0\FinanceControl.Application.deps.json
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Application\bin\Debug\net8.0\FinanceControl.Application.dll
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Application\bin\Debug\net8.0\FinanceControl.Application.pdb
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Application\bin\Debug\net8.0\FinanceControl.Domain.dll
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Application\bin\Debug\net8.0\FinanceControl.Domain.pdb
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Application\obj\Debug\net8.0\FinanceControl.Application.csproj.AssemblyReference.cache
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Application\obj\Debug\net8.0\FinanceControl.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Application\obj\Debug\net8.0\FinanceControl.Application.AssemblyInfoInputs.cache
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Application\obj\Debug\net8.0\FinanceControl.Application.AssemblyInfo.cs
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Application\obj\Debug\net8.0\FinanceControl.Application.csproj.CoreCompileInputs.cache
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Application\obj\Debug\net8.0\FinanceControl.Application.sourcelink.json
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Application\obj\Debug\net8.0\FinanceC.699E4819.Up2Date
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Application\obj\Debug\net8.0\FinanceControl.Application.dll
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Application\obj\Debug\net8.0\refint\FinanceControl.Application.dll
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Application\obj\Debug\net8.0\FinanceControl.Application.pdb
+C:\Users\ticot\OneDrive\Documentos\GitHub\FinanceControl\backend\src\FinanceControl.Application\obj\Debug\net8.0\ref\FinanceControl.Application.dll

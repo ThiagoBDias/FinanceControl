@@ -11,6 +11,29 @@ services:
       - "5432:5432"
     volumes:
       - financecontrol_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d financecontrol"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: src/FinanceControl.API/Dockerfile
+    container_name: financecontrol-api
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=financecontrol;Username=postgres;Password=postgres
+      FINANCECONTROL_JWT_SECRET: ${FINANCECONTROL_JWT_SECRET:-local-docker-development-secret-change-before-deploy}
+      Jwt__Secret: ${FINANCECONTROL_JWT_SECRET:-local-docker-development-secret-change-before-deploy}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   financecontrol_pgdata:

@@ -1,11 +1,11 @@
 export type Account = {
   id: string;
   name: string;
-  type: string;
-  initialBalance?: number;
-  cachedBalance?: number;
-  balance?: number;
-  isActive?: boolean;
+  type: number | string;
+  initialBalance: number;
+  calculatedBalance: number;
+  isActive: boolean;
+  ownerScopeId: string;
   creditCardSettings?: {
     creditLimit: number;
     closingDay: number;
@@ -16,7 +16,7 @@ export type Account = {
 export type Category = {
   id: string;
   name: string;
-  type: string;
+  type: number | string;
   isActive: boolean;
 };
 
@@ -27,10 +27,11 @@ export type Transaction = {
   invoiceId?: string | null;
   transferGroupId?: string | null;
   amount: number;
-  type: string;
-  paymentDate: string;
-  description?: string | null;
-  isDeleted?: boolean;
+  type: number | string;
+  competenceDate: string;
+  paymentDate: string | null;
+  dueDate: string | null;
+  description: string;
 };
 
 export type Invoice = {
@@ -40,9 +41,8 @@ export type Invoice = {
   periodMonth: number;
   closingDate: string;
   dueDate: string;
-  status: string;
-  paidAmount: number;
-  totalAmount?: number;
+  status: number | string;
+  totalAmount: number;
 };
 
 export type Budget = {
@@ -50,33 +50,34 @@ export type Budget = {
   categoryId: string;
   year: number;
   month: number;
-  limit?: number;
-  amount?: number;
-  spent?: number;
-  remaining?: number;
-  exceeded?: number;
+  categoryName: string;
+  limitAmount: number;
+  spentAmount: number;
+  remainingAmount: number;
+  isOverLimit: boolean;
 };
 
 export type DashboardData = {
-  balance?: number;
-  totalBalance?: number;
-  income?: number;
-  totalIncome?: number;
-  expenses?: number;
-  totalExpenses?: number;
-  net?: number;
-  result?: number;
-  accounts?: Account[];
-  recentTransactions?: Transaction[];
-  transactions?: Transaction[];
-  expensesByCategory?: Array<{ name: string; amount: number }>;
+  year: number;
+  month: number;
+  netBalance: number;
+  income: number;
+  expenses: number;
+  result: number;
+  expensesByCategory: Array<{ categoryId: string | null; categoryName: string; amount: number }>;
+  accounts: Array<{ accountId: string; name: string; type: string; balance: number; isLiability: boolean }>;
+  creditCards: Array<{ accountId: string; name: string; creditLimit: number; usedAmount: number; availableAmount: number }>;
+  invoices: Array<{ id: string; creditCardAccountId: string; periodYear: number; periodMonth: number; status: string; totalAmount: number; dueDate: string }>;
+  budgets: Array<{ categoryId: string; categoryName: string; limitAmount: number; spentAmount: number; remainingAmount: number; isOverLimit: boolean }>;
+  monthlyEvolution: Array<{ year: number; month: number; income: number; expenses: number; result: number }>;
 };
 
 export type AuthResponse = {
-  token?: string;
-  accessToken?: string;
-  refreshToken?: string;
-  user?: unknown;
+  accessToken: string;
+  userId: string;
+  name: string;
+  email: string;
+  expiresAtUtc: string;
 };
 
 export type Paged<T> = T[] | { items?: T[]; data?: T[]; totalCount?: number };
