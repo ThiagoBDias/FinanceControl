@@ -18,6 +18,7 @@ public sealed class TransferGroup
     public decimal Amount { get; }
     public DateOnly TransferDate { get; }
     public string? Description { get; }
+    public Guid? InvoiceId { get; private set; }
     public DateTime CreatedAt { get; }
 
     private TransferGroup(
@@ -45,7 +46,8 @@ public sealed class TransferGroup
         Account destination,
         decimal amount,
         DateOnly transferDate,
-        string? description = null)
+        string? description = null,
+        Guid? invoiceId = null)
     {
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(destination);
@@ -56,20 +58,19 @@ public sealed class TransferGroup
         if (source.OwnerScopeId != destination.OwnerScopeId)
             throw new CrossScopeTransferException();
 
-        if (source.Type == FinanceControl.Domain.Enums.AccountType.CreditCard || destination.Type == FinanceControl.Domain.Enums.AccountType.CreditCard)
-            throw new InvalidOperationException("Transferencias entre contas de credito nao fazem parte do MVP; use apenas contas financeiras.");
-
-        if (amount <= 0)
-            throw new InvalidMonetaryAmountException(amount);
+        var sourceIsCard = source.Type == Enums.AccountType.CreditCard;
+        var destinationIsCard = destination.Type == Enums.AccountType.CreditCard;
+        if (sourceIsCard || destinationIsCard != invoiceId.HasValue)
+            throw new OperationRejectedException("Use uma conta de saldo e informe a fatura em pagamentos de cartão.");
 
         var group = new TransferGroup(
             Guid.NewGuid(), source.OwnerScopeId, source.Id, destination.Id,
-            amount, transferDate, description, DateTime.UtcNow);
+            amount, transferDate, description, DateTime.UtcNow) { InvoiceId = invoiceId };
 
         // As duas pernas sao criadas juntas, dentro do mesmo metodo -
         // nao ha como uma existir sem a outra.
         source.RegisterTransferOut(amount, group.Id, transferDate, description);
-        destination.RegisterTransferIn(amount, group.Id, transferDate, description);
+        destination.RegisterTransferIn(amount, group.Id, transferDate, description, settlingInvoice: invoiceId.HasValue);
 
         return group;
     }

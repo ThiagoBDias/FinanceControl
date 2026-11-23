@@ -63,10 +63,10 @@ public partial class TransferGroupTests
     public void Create_ShouldRejectCreditCardAsTransferEndpoint()
     {
         var owner = Guid.NewGuid();
-        var card = Account.CreateCreditCard(owner, "Cartao", new FinanceControl.Domain.ValueObjects.CreditCardSettings(3000m, 10, 20));
+        var card = Account.CreateCreditCard(owner, "Cartao", FinanceControl.Domain.ValueObjects.CreditCardSettings.Create(3000m, 10, 20));
         var checking = Account.CreateAsset(owner, "Conta", AccountType.Checking, 1000m);
 
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<OperationRejectedException>(() =>
             TransferGroup.Create(checking, card, 100m, new DateOnly(2026, 9, 24)));
     }
 }

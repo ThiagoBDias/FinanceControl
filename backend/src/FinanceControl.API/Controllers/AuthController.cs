@@ -1,47 +1,71 @@
+using System.Security.Cryptography;
+using System.Text;
 using FinanceControl.Application.DTOs;
 using FinanceControl.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace FinanceControl.API.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public sealed class AuthController : ControllerBase
+public sealed class AuthController(IAuthService auth, IConfiguration configuration, IWebHostEnvironment environment) : ControllerBase
 {
-    private readonly IAuthService _auth;
-
-    public AuthController(IAuthService auth) => _auth = auth;
-
     [AllowAnonymous]
+    [EnableRateLimiting("Auth")]
     [HttpPost("register")]
-    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status201Created)]
-    public async Task<ActionResult<AuthResponse>> Register(
-        RegisterRequest request,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request, CancellationToken cancellationToken)
     {
-        var response = await _auth.RegisterAsync(request, cancellationToken);
+        if (!CanRegister(request))
+            return StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails { Detail = "Cadastro restrito por convite." });
+
+        var response = await auth.RegisterAsync(request, cancellationToken);
+        if (IsBrowser)
+            return StatusCode(StatusCodes.Status201Created);
         return StatusCode(StatusCodes.Status201Created, response);
     }
 
     [AllowAnonymous]
+    [EnableRateLimiting("Auth")]
     [HttpPost("login")]
-    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<AuthResponse>> Login(
-        LoginRequest request,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<AuthResponse>> Login(LoginRequest request, CancellationToken cancellationToken)
     {
-        var response = await _auth.LoginAsync(request, cancellationToken);
-        return Ok(response);
+        var response = await auth.LoginAsync(request, cancellationToken);
+        if (!IsBrowser)
+            return Ok(response);
+
+        var development = environment.IsDevelopment();
+        Response.Cookies.Append(SessionCookie.Name(development), response.AccessToken,
+            SessionCookie.Options(development, response.ExpiresAtUtc));
+        return NoContent();
+    }
+
+    [AllowAnonymous]
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        var development = environment.IsDevelopment();
+        Response.Cookies.Delete(SessionCookie.Name(development), SessionCookie.Options(development));
+        return NoContent();
     }
 
     [Authorize]
     [HttpGet("me")]
-    public ActionResult<object> Me() => Ok(new
+    public ActionResult<object> Me() => Ok(new { UserId = User.GetCurrentUserId(), Name = User.Identity?.Name });
+
+    private bool IsBrowser => Request.Headers[SessionCookie.BrowserHeader] == "browser";
+
+    private bool CanRegister(RegisterRequest request)
     {
-        UserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value,
-        Name = User.Identity?.Name,
-        Email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
-    });
+        if (environment.IsDevelopment() && configuration.GetValue<bool>("Auth:AllowLocalRegistration"))
+            return true;
+
+        var email = configuration["Auth:InviteEmail"];
+        var code = configuration["Auth:InviteCode"];
+        return !string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(code) && code.Length >= 32 &&
+            string.Equals(email.Trim(), request.Email.Trim(), StringComparison.OrdinalIgnoreCase) &&
+            request.InviteCode is not null && CryptographicOperations.FixedTimeEquals(
+                SHA256.HashData(Encoding.UTF8.GetBytes(code)), SHA256.HashData(Encoding.UTF8.GetBytes(request.InviteCode)));
+    }
 }

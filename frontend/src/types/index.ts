@@ -32,6 +32,9 @@ export type Transaction = {
   paymentDate: string | null;
   dueDate: string | null;
   description: string;
+  isPending: boolean;
+  installmentNumber: number | null;
+  installmentCount: number | null;
 };
 
 export type Invoice = {
@@ -43,6 +46,9 @@ export type Invoice = {
   dueDate: string;
   status: number | string;
   totalAmount: number;
+  openingAmount: number;
+  paidAmount: number;
+  pendingAmount: number;
 };
 
 export type Budget = {
@@ -61,6 +67,7 @@ export type DashboardData = {
   year: number;
   month: number;
   netBalance: number;
+  cashBalance: number;
   income: number;
   expenses: number;
   result: number;
@@ -69,6 +76,8 @@ export type DashboardData = {
   creditCards: Array<{ accountId: string; name: string; creditLimit: number; usedAmount: number; availableAmount: number }>;
   invoices: Array<{ id: string; creditCardAccountId: string; periodYear: number; periodMonth: number; status: string; totalAmount: number; dueDate: string }>;
   budgets: Array<{ categoryId: string; categoryName: string; limitAmount: number; spentAmount: number; remainingAmount: number; isOverLimit: boolean }>;
+  upcoming: Array<{ kind: string; name: string; dueDate: string; amount: number }>;
+  projectedCommitments: Array<{ year: number; month: number; amount: number }>;
   monthlyEvolution: Array<{ year: number; month: number; income: number; expenses: number; result: number }>;
 };
 
@@ -81,3 +90,6 @@ export type AuthResponse = {
 };
 
 export type Paged<T> = T[] | { items?: T[]; data?: T[]; totalCount?: number };
+
+export type DebtInstallment = { number: number; dueDate: string; amount: number; paymentDate: string | null };
+export type Debt = { id: string; name: string; totalAmount: number; pendingAmount: number; installments: DebtInstallment[] };

@@ -18,7 +18,7 @@ public sealed class DashboardController : ControllerBase
         [FromServices] GetDashboardUseCase useCase,
         CancellationToken cancellationToken)
     {
-        var now = DateTime.UtcNow;
+        var now = FinanceControl.Application.Validators.FinancialDates.Today;
         var selectedYear = year ?? now.Year;
         var selectedMonth = month ?? now.Month;
         return Ok(await useCase.ExecuteAsync(

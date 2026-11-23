@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/dist/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+TestResults/
+playwright-report/
+test-results/

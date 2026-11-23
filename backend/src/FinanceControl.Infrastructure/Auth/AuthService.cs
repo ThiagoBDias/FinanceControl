@@ -1,3 +1,4 @@
+using FinanceControl.Domain.Exceptions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -34,7 +35,7 @@ public sealed class AuthService : IAuthService
 
         var normalizedEmail = request.Email.Trim().ToLowerInvariant();
         if (await _userManager.FindByEmailAsync(normalizedEmail) is not null)
-            throw new InvalidOperationException("Já existe um usuário com este e-mail.");
+            throw new OperationRejectedException("Já existe um usuário com este e-mail.");
 
         var id = Guid.NewGuid();
         var identityUser = new ApplicationUser
@@ -49,7 +50,7 @@ public sealed class AuthService : IAuthService
         await using var transaction = await _db.Database.BeginTransactionAsync(cancellationToken);
         var result = await _userManager.CreateAsync(identityUser, request.Password);
         if (!result.Succeeded)
-            throw new InvalidOperationException(string.Join(" ", result.Errors.Select(e => e.Description)));
+            throw new OperationRejectedException(string.Join(" ", result.Errors.Select(e => e.Description)));
 
         var domainUser = User.Create(id, request.Name, normalizedEmail);
         _db.DomainUsers.Add(domainUser);
@@ -63,17 +64,23 @@ public sealed class AuthService : IAuthService
     {
         var normalizedEmail = request.Email.Trim().ToLowerInvariant();
         var user = await _userManager.FindByEmailAsync(normalizedEmail);
-        if (user is null || !await _userManager.CheckPasswordAsync(user, request.Password))
+        if (user is null || await _userManager.IsLockedOutAsync(user))
             throw new UnauthorizedAccessException("E-mail ou senha inválidos.");
+
+        if (!await _userManager.CheckPasswordAsync(user, request.Password))
+        {
+            await _userManager.AccessFailedAsync(user);
+            throw new UnauthorizedAccessException("E-mail ou senha inválidos.");
+        }
+
+        if (await _userManager.GetAccessFailedCountAsync(user) > 0)
+            await _userManager.ResetAccessFailedCountAsync(user);
 
         return CreateResponse(user);
     }
 
     private AuthResponse CreateResponse(ApplicationUser user)
     {
-        if (string.IsNullOrWhiteSpace(_options.Secret) || _options.Secret.Length < 32)
-            throw new InvalidOperationException("JWT não configurado. Defina FINANCECONTROL_JWT_SECRET com pelo menos 32 caracteres.");
-
         var now = DateTime.UtcNow;
         var expires = now.AddMinutes(_options.ExpirationMinutes);
         var claims = new[]
@@ -104,20 +111,20 @@ public sealed class AuthService : IAuthService
 
     private static void ValidateRequest(string name, string email, string password)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        if (string.IsNullOrWhiteSpace(name) || name.Trim().Length > 100)
             throw new RequestValidationException(new[]
             {
                 new ValidationError(nameof(name), "Nome é obrigatório.")
             });
-        if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
+        if (string.IsNullOrWhiteSpace(email) || !new System.ComponentModel.DataAnnotations.EmailAddressAttribute().IsValid(email.Trim()) || email.Trim().Length > 254)
             throw new RequestValidationException(new[]
             {
                 new ValidationError(nameof(email), "E-mail inválido.")
             });
-        if (string.IsNullOrWhiteSpace(password) || password.Length < 8)
+        if (string.IsNullOrWhiteSpace(password) || password.Length is < 12 or > 128)
             throw new RequestValidationException(new[]
             {
-                new ValidationError(nameof(password), "A senha deve possuir pelo menos 8 caracteres.")
+                new ValidationError(nameof(password), "A senha deve possuir entre 12 e 128 caracteres.")
             });
     }
 }

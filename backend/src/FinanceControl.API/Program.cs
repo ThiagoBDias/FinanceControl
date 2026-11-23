@@ -1,3 +1,6 @@
+using System.Threading.RateLimiting;
+using FinanceControl.API;
+using FinanceControl.Application.UseCases.Debts;
 using FinanceControl.API.Middlewares;
 using FinanceControl.Application.DTOs;
 using FinanceControl.Application.Interfaces;
@@ -17,11 +20,19 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 128 * 1024);
 builder.Services.AddControllers();
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("Auth", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "local",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 30, Window = TimeSpan.FromMinutes(1) }));
+});
 builder.Services.AddEndpointsApiExplorer();
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
 builder.Services.AddCors(options => options.AddPolicy("Frontend", policy =>
-    policy.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod()));
+    policy.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -44,12 +55,12 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddProblemDetails();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? Environment.GetEnvironmentVariable("FINANCECONTROL_CONNECTION_STRING")
-    ?? throw new InvalidOperationException(
-        "Configure ConnectionStrings:DefaultConnection ou FINANCECONTROL_CONNECTION_STRING.");
+var connectionString = Environment.GetEnvironmentVariable("FINANCECONTROL_CONNECTION_STRING")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+    throw new InvalidOperationException("Configure FINANCECONTROL_CONNECTION_STRING.");
 
-builder.Services.AddFinanceControlInfrastructure(connectionString, builder.Configuration);
+builder.Services.AddFinanceControlInfrastructure(connectionString, builder.Configuration, SessionCookie.Name(builder.Environment.IsDevelopment()));
 
 // Contas.
 builder.Services.AddScoped<CreateAccountUseCase>();
@@ -76,10 +87,13 @@ builder.Services.AddScoped<CreateCreditCardUseCase>();
 builder.Services.AddScoped<ListCreditCardsUseCase>();
 builder.Services.AddScoped<GetCreditCardUseCase>();
 
-// Faturas (somente visualizacao/ciclo de fechamento).
+// Faturas, pagamentos e dívidas.
 builder.Services.AddScoped<ListInvoicesUseCase>();
 builder.Services.AddScoped<GetInvoiceUseCase>();
 builder.Services.AddScoped<CloseInvoiceUseCase>();
+builder.Services.AddScoped<PayInvoiceUseCase>();
+builder.Services.AddScoped<DebtUseCases>();
+builder.Services.AddScoped<SettleExpenseUseCase>();
 
 // Transferencias.
 builder.Services.AddScoped<CreateTransferUseCase>();
@@ -104,11 +118,13 @@ builder.Services.AddScoped<IValidator<CreateTransferRequest>, CreateTransferRequ
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (args.Contains("--migrate") || app.Configuration.GetValue<bool>("Database:ApplyMigrations"))
 {
     await using var scope = app.Services.CreateAsyncScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<FinanceControlDbContext>();
     await dbContext.Database.MigrateAsync();
+    if (args.Contains("--migrate"))
+        return;
 }
 
 if (app.Environment.IsDevelopment())
@@ -117,12 +133,38 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.XContentTypeOptions = "nosniff";
+    context.Response.Headers.XFrameOptions = "DENY";
+    context.Response.Headers["Referrer-Policy"] = "no-referrer";
+    if (!app.Environment.IsDevelopment())
+        context.Response.Headers.StrictTransportSecurity = "max-age=31536000";
+    if (context.Request.Path.StartsWithSegments("/api"))
+    {
+        context.Response.Headers.CacheControl = "no-store";
+        var hasSession = context.Request.Cookies.ContainsKey(SessionCookie.Name(app.Environment.IsDevelopment()));
+        var changesState = !HttpMethods.IsGet(context.Request.Method) && !HttpMethods.IsHead(context.Request.Method) &&
+            !HttpMethods.IsOptions(context.Request.Method);
+        if (hasSession && changesState && context.Request.Headers[SessionCookie.BrowserHeader] != "browser")
+        {
+            await Results.Problem(statusCode: 403, detail: "Origem inválida para esta operação.").ExecuteAsync(context);
+            return;
+        }
+    }
+    else if (!app.Environment.IsDevelopment())
+        context.Response.Headers.ContentSecurityPolicy =
+            "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'";
+    await next();
+});
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-if (!app.Environment.IsDevelopment())
-    app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
 app.UseCors("Frontend");
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<FinancialMutationMiddleware>();
 app.MapControllers();
 
 app.MapGet("/health", () => Results.Ok(new
@@ -130,5 +172,9 @@ app.MapGet("/health", () => Results.Ok(new
     status = "ok",
     service = "FinanceControl.API"
 }));
+
+app.MapFallback("/api/{**path}", () => Results.NotFound());
+if (app.Environment.WebRootFileProvider.GetFileInfo("index.html").Exists)
+    app.MapFallbackToFile("index.html");
 
 app.Run();

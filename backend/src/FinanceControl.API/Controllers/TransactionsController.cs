@@ -102,4 +102,10 @@ public sealed class TransactionsController : ControllerBase
             new GetTransactionRequest(User.GetCurrentUserId(), id), cancellationToken);
         return NoContent();
     }
+
+    [HttpPost("{id:guid}/settle")]
+    public Task<TransactionResponse> Settle(Guid id, SettleExpenseBody request, [FromServices] SettleExpenseUseCase useCase, CancellationToken cancellationToken) =>
+        useCase.ExecuteAsync(User.GetCurrentUserId(), id, request.PaymentDate, cancellationToken);
 }
+
+public sealed record SettleExpenseBody(DateOnly PaymentDate);

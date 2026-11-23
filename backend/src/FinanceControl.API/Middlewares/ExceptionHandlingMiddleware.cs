@@ -26,10 +26,6 @@ public sealed class ExceptionHandlingMiddleware
         {
             await WriteProblemAsync(context, StatusCodes.Status401Unauthorized, "Não autorizado", ex.Message);
         }
-        catch (InvalidOperationException ex)
-        {
-            await WriteProblemAsync(context, StatusCodes.Status400BadRequest, "Operação inválida", ex.Message);
-        }
         catch (DbUpdateConcurrencyException ex)
         {
             _logger.LogWarning(ex, "Conflito de concorrencia em {Method} {Path}", context.Request.Method, context.Request.Path);

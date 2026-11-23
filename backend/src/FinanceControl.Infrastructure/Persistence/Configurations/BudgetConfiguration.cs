@@ -19,6 +19,6 @@ public sealed class BudgetConfiguration : IEntityTypeConfiguration<Budget>
         builder.Property(b => b.UpdatedAt).HasColumnType("timestamptz").IsRequired();
         builder.HasIndex(b => new { b.OwnerScopeId, b.CategoryId, b.Year, b.Month }).IsUnique();
         builder.HasIndex(b => new { b.OwnerScopeId, b.Year, b.Month });
-        builder.UseXminAsConcurrencyToken();
+        builder.Property<uint>("xmin").IsRowVersion();
     }
 }

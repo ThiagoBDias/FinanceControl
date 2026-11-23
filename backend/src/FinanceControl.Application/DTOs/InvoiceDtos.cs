@@ -8,6 +8,7 @@ public sealed record GetInvoiceRequest(Guid OwnerScopeId, Guid InvoiceId);
 public sealed record ListInvoicesRequest(Guid OwnerScopeId, Guid CreditCardAccountId);
 
 public sealed record CloseInvoiceRequest(Guid OwnerScopeId, Guid InvoiceId);
+public sealed record PayInvoiceRequest(Guid OwnerScopeId, Guid InvoiceId, Guid AccountId, decimal Amount, DateOnly PaymentDate);
 
 
 /// <summary>
@@ -25,12 +26,15 @@ public sealed record InvoiceResponse(
     InvoiceStatus Status,
     decimal TotalAmount,
     DateTime CreatedAt,
-    DateTime UpdatedAt);
+    DateTime UpdatedAt,
+    decimal OpeningAmount,
+    decimal PaidAmount,
+    decimal PendingAmount);
 
 internal static class InvoiceMapper
 {
     public static InvoiceResponse ToResponse(Invoice invoice, decimal totalAmount) => new(
         invoice.Id, invoice.OwnerScopeId, invoice.CreditCardAccountId, invoice.PeriodYear, invoice.PeriodMonth,
         invoice.ClosingDate, invoice.DueDate, invoice.Status, totalAmount,
-        invoice.CreatedAt, invoice.UpdatedAt);
+        invoice.CreatedAt, invoice.UpdatedAt, invoice.OpeningAmount, invoice.PaidAmount, totalAmount - invoice.PaidAmount);
 }

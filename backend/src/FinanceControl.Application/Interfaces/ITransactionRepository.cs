@@ -23,4 +23,5 @@ public interface ITransactionRepository
     Task<decimal> GetInvoiceTotalAsync(Guid invoiceId, CancellationToken cancellationToken = default);
 
     Task<decimal> GetExpenseTotalByCategoryAndMonthAsync(Guid ownerScopeId, Guid categoryId, int year, int month, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Transaction>> ListPendingExpensesAsync(Guid owner, CancellationToken cancellationToken);
 }

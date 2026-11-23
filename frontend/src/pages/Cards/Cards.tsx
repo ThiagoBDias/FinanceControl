@@ -30,9 +30,9 @@ export default function Cards() {
     const form = new FormData(event.currentTarget);
     try {
       await api.post("/credit-cards", {
-        name: String(form.get("name")).trim(), creditLimit: Number(form.get("creditLimit")),
+        name: String(form.get("name")).trim(), creditLimit: String(form.get("creditLimit")),
         closingDay: Number(form.get("closingDay")), dueDay: Number(form.get("dueDay")),
-        initialBalance: Number(form.get("initialBalance"))
+        initialBalance: String(form.get("initialBalance"))
       });
       setCreateOpen(false); setNotice("Cartão criado com sucesso."); notifyFinanceDataChanged();
     } catch (err) { setError(getErrorMessage(err)); }
@@ -48,7 +48,7 @@ export default function Cards() {
       const used = Math.max(0, card.calculatedBalance);
       const available = Math.max(0, limit - used);
       const percent = limit > 0 ? Math.min(100, used / limit * 100) : 0;
-      return <article className="credit-card" key={card.id}><div className="credit-top"><span>{card.name}</span><span>Crédito</span></div><div className="credit-number">•••• •••• ••••</div>
+      return <article className="credit-card" key={card.id}><div className="credit-top"><span>{card.name}</span><span>Crédito</span></div>
         <div className="credit-bottom"><div><small>Utilizado</small><strong>{money(used)}</strong></div><div><small>Disponível</small><strong>{money(available)}</strong></div><div><small>Limite</small><strong>{money(limit)}</strong></div></div><div className="progress"><span style={{ width: `${percent}%` }} /></div>
         <div className="card-meta"><span>Fecha dia {card.creditCardSettings?.closingDay}</span><span>Vence dia {card.creditCardSettings?.dueDay}</span>{!card.isActive && <span className="badge">Inativo</span>}</div>
       </article>;
@@ -58,7 +58,7 @@ export default function Cards() {
       <label>Limite<input className="input" name="creditLimit" type="number" min="0.01" step="0.01" required /></label>
       <label>Dia de fechamento<input className="input" name="closingDay" type="number" min="1" max="31" required /></label>
       <label>Dia de vencimento<input className="input" name="dueDay" type="number" min="1" max="31" required /></label>
-      <label>Saldo inicial da fatura<input className="input" name="initialBalance" type="number" min="0" step="0.01" required defaultValue="0" /></label>
+      <label>Valor pendente anterior ao cadastro<input className="input" name="initialBalance" type="number" min="0" step="0.01" required defaultValue="0" /></label>
     </Modal>}
   </>;
 }

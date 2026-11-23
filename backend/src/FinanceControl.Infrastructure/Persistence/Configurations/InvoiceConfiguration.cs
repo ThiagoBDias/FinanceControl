@@ -21,8 +21,8 @@ public sealed class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
 
         builder.Property(i => i.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
 
-        // TotalAmount nao e armazenado: a fatura e uma visao consolidada
-        // dos lancamentos vinculados a ela.
+        builder.Property(i => i.OpeningAmount).HasPrecision(18, 2).IsRequired();
+        builder.Property(i => i.PaidAmount).HasPrecision(18, 2).IsRequired();
 
         builder.Property(i => i.CreatedAt).HasColumnType("timestamptz").IsRequired();
         builder.Property(i => i.UpdatedAt).HasColumnType("timestamptz").IsRequired();
@@ -40,6 +40,6 @@ public sealed class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         // tentando abrir a fatura do mesmo mes ao mesmo tempo).
         builder.HasIndex(i => new { i.CreditCardAccountId, i.PeriodYear, i.PeriodMonth }).IsUnique();
 
-        builder.UseXminAsConcurrencyToken();
+        builder.Property<uint>("xmin").IsRowVersion();
     }
 }

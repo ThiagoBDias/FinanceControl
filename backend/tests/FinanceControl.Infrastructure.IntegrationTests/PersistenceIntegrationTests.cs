@@ -67,7 +67,7 @@ public sealed class PersistenceIntegrationTests
         await _fixture.ResetDatabaseAsync();
 
         var ownerId = Guid.NewGuid();
-        var settings = new FinanceControl.Domain.ValueObjects.CreditCardSettings(3000m, 10, 20);
+        var settings = FinanceControl.Domain.ValueObjects.CreditCardSettings.Create(3000m, 10, 20);
         var card = Account.CreateCreditCard(ownerId, "Nubank", settings);
 
         await using (var context = _fixture.CreateContext())

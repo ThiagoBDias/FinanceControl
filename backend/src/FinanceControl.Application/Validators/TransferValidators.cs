@@ -28,11 +28,14 @@ public sealed class CreateTransferRequestValidator : IValidator<CreateTransferRe
             errors.Add(new ValidationError(nameof(request.DestinationAccountId), "Nao e possivel transferir de uma conta para ela mesma."));
         }
 
-        if (request.Amount <= 0)
-            errors.Add(new ValidationError(nameof(request.Amount), "O valor deve ser maior que zero."));
+        if (request.Amount <= 0 || !FinanceControl.Domain.ValueObjects.Money.IsValid(request.Amount))
+            errors.Add(new ValidationError(nameof(request.Amount), "Informe um valor positivo de até duas casas decimais."));
 
         if (request.TransferDate == default)
             errors.Add(new ValidationError(nameof(request.TransferDate), "A data da transferencia e obrigatoria."));
+
+        if (request.Description?.Trim().Length > 500)
+            errors.Add(new ValidationError(nameof(request.Description), "A descrição deve ter até 500 caracteres."));
 
         return new ValidationResult(errors);
     }

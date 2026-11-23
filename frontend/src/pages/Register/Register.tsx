@@ -5,13 +5,14 @@ import { getErrorMessage } from "../../services/api";
 
 export default function Register() {
   const { register } = useAuth(); const navigate = useNavigate();
+  const [invite, setInvite] = useState("");
   const [name,setName]=useState(""); const [email,setEmail]=useState(""); const [password,setPassword]=useState(""); const [confirm,setConfirm]=useState("");
   const [error,setError]=useState(""); const [loading,setLoading]=useState(false);
   async function submit(e: FormEvent) {
     e.preventDefault(); setError("");
     if (password !== confirm) { setError("As senhas não conferem."); return; }
     setLoading(true);
-    try { await register(name,email,password); navigate("/login"); }
+    try { await register(name,email,password,invite || undefined); navigate("/login"); }
     catch(err) { setError(getErrorMessage(err)); } finally { setLoading(false); }
   }
   return <div className="auth-page"><div className="auth-panel">
@@ -20,8 +21,9 @@ export default function Register() {
     <form onSubmit={submit} className="form">
       <label>Nome<input className="input" value={name} onChange={e=>setName(e.target.value)} required /></label>
       <label>E-mail<input className="input" type="email" value={email} onChange={e=>setEmail(e.target.value)} required /></label>
-      <label>Senha<input className="input" type="password" value={password} onChange={e=>setPassword(e.target.value)} required /></label>
+      <label>Senha<input className="input" type="password" value={password} onChange={e=>setPassword(e.target.value)} minLength={12} maxLength={128} autoComplete="new-password" required /></label>
       <label>Confirmar senha<input className="input" type="password" value={confirm} onChange={e=>setConfirm(e.target.value)} required /></label>
+      <label>Código de convite<input className="input" type="password" value={invite} onChange={e=>setInvite(e.target.value)} autoComplete="off" /></label>
       {error && <div className="alert error">{error}</div>}
       <button className="primary-btn" disabled={loading}>{loading ? "Criando..." : "Criar conta"}</button>
     </form>

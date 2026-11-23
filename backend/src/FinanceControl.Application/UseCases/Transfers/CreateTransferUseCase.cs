@@ -42,9 +42,8 @@ public sealed class CreateTransferUseCase : IUseCase<CreateTransferRequest, Tran
         var destination = await _accountRepository.GetByIdAsync(request.DestinationAccountId, request.OwnerScopeId, cancellationToken)
             ?? throw new EntityNotFoundException(nameof(Account), request.DestinationAccountId);
 
-        // TransferGroup.Create valida origem != destino, mesmo OwnerScopeId,
-        // valor > 0, contas ativas - e cria TransferOut + TransferIn
-        // atomicamente (regra 6/7). Nao ha checagem duplicada aqui.
+        FinancialDates.ValidatePaymentDate(request.TransferDate);
+
         var transferGroup = TransferGroup.Create(
             source, destination, request.Amount, request.TransferDate, request.Description);
 

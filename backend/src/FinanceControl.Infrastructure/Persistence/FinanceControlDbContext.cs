@@ -18,6 +18,7 @@ public sealed class FinanceControlDbContext : IdentityDbContext<ApplicationUser,
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<TransferGroup> TransferGroups => Set<TransferGroup>();
+    public DbSet<Debt> Debts => Set<Debt>();
     public DbSet<Budget> Budgets => Set<Budget>();
 
     /// <summary>

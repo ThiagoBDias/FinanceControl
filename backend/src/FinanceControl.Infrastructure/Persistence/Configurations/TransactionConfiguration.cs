@@ -16,6 +16,10 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
 
         builder.Property(t => t.Type).HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(t => t.Amount).HasPrecision(18, 2).IsRequired();
+        builder.Property(t => t.IsScheduled);
+        builder.Property(t => t.PurchaseId);
+        builder.Property(t => t.InstallmentNumber);
+        builder.Property(t => t.InstallmentCount);
         builder.Property(t => t.Description).IsRequired().HasMaxLength(500);
 
         // Datas de negocio (sem horario/fuso) - regra "datas de
@@ -78,6 +82,6 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
         // "Where(t => !t.IsDeleted)" manualmente.
         builder.HasQueryFilter(t => !t.IsDeleted);
 
-        builder.UseXminAsConcurrencyToken();
+        builder.Property<uint>("xmin").IsRowVersion();
     }
 }

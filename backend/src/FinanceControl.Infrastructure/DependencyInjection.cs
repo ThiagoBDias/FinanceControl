@@ -17,17 +17,18 @@ public static class DependencyInjection
     public static IServiceCollection AddFinanceControlInfrastructure(
         this IServiceCollection services,
         string connectionString,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        string sessionCookie)
     {
         services.AddDbContext<FinanceControlDbContext>(options =>
             options.UseNpgsql(connectionString));
 
-        services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
-
         services.AddIdentityCore<ApplicationUser>(options =>
         {
             options.User.RequireUniqueEmail = true;
-            options.Password.RequiredLength = 8;
+            options.Password.RequiredLength = 12;
+            options.Lockout.MaxFailedAccessAttempts = 5;
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
             options.Password.RequireDigit = true;
             options.Password.RequireUppercase = false;
             options.Password.RequireLowercase = false;
@@ -41,14 +42,37 @@ public static class DependencyInjection
         var environmentSecret = Environment.GetEnvironmentVariable("FINANCECONTROL_JWT_SECRET");
         if (!string.IsNullOrWhiteSpace(environmentSecret))
             jwt.Secret = environmentSecret;
-        if (string.IsNullOrWhiteSpace(jwt.Secret) || jwt.Secret.Length < 32)
+        if (string.IsNullOrWhiteSpace(jwt.Secret) || Encoding.UTF8.GetByteCount(jwt.Secret) < 32)
             throw new InvalidOperationException("JWT Secret ausente ou curto. Configure Jwt:Secret ou FINANCECONTROL_JWT_SECRET.");
+
+        if (string.IsNullOrWhiteSpace(jwt.Issuer) || string.IsNullOrWhiteSpace(jwt.Audience) ||
+            jwt.ExpirationMinutes is < 5 or > 120)
+            throw new InvalidOperationException("Configure emissor, público e validade do JWT entre 5 e 120 minutos.");
+
+        services.Configure<JwtOptions>(options =>
+        {
+            options.Secret = jwt.Secret;
+            options.Issuer = jwt.Issuer;
+            options.Audience = jwt.Audience;
+            options.ExpirationMinutes = jwt.ExpirationMinutes;
+        });
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        if (!context.Request.Headers.ContainsKey("Authorization") &&
+                            context.Request.Cookies.TryGetValue(sessionCookie, out var token))
+                            context.Token = token;
+                        return Task.CompletedTask;
+                    }
+                };
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
+                    ValidAlgorithms = [SecurityAlgorithms.HmacSha256],
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
@@ -70,6 +94,7 @@ public static class DependencyInjection
         services.AddScoped<ITransferRepository, TransferRepository>();
         services.AddScoped<IInvoiceRepository, InvoiceRepository>();
         services.AddScoped<IBudgetRepository, BudgetRepository>();
+        services.AddScoped<IDebtRepository, DebtRepository>();
 
         return services;
     }

@@ -1,44 +1,52 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import api from "../services/api";
-import type { AuthResponse } from "../types";
 
+type Session = { userId: string; name: string };
 type AuthContextValue = {
-  token: string | null;
+  session: Session | null;
+  loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
+  register: (name: string, email: string, password: string, inviteCode?: string) => Promise<void>;
+  logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem("financecontrol_token"));
-
-  const logout = () => {
-    localStorage.removeItem("financecontrol_token");
-    setToken(null);
-  };
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const handler = () => logout();
-    window.addEventListener("financecontrol:logout", handler);
-    return () => window.removeEventListener("financecontrol:logout", handler);
+    localStorage.removeItem("financecontrol_token");
+    const abort = new AbortController();
+    const clearSession = () => setSession(null);
+    window.addEventListener("financecontrol:logout", clearSession);
+    api.get<Session>("/auth/me", { signal: abort.signal })
+      .then(({ data }) => setSession(data))
+      .catch(() => undefined)
+      .finally(() => { if (!abort.signal.aborted) setLoading(false); });
+    return () => {
+      abort.abort();
+      window.removeEventListener("financecontrol:logout", clearSession);
+    };
   }, []);
 
   async function login(email: string, password: string) {
-    const response = await api.post<AuthResponse>("/auth/login", { email, password });
-    const nextToken = response.data.accessToken;
-    if (!nextToken) throw new Error("A API não retornou o token de acesso.");
-    localStorage.setItem("financecontrol_token", nextToken);
-    setToken(nextToken);
+    await api.post("/auth/login", { email, password });
+    const { data } = await api.get<Session>("/auth/me");
+    setSession(data);
   }
 
-  async function register(name: string, email: string, password: string) {
-    await api.post("/auth/register", { name, email, password });
+  async function register(name: string, email: string, password: string, inviteCode?: string) {
+    await api.post("/auth/register", { name, email, password, inviteCode });
   }
 
-  const value = useMemo(() => ({ token, login, register, logout }), [token]);
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  async function logout() {
+    await api.post("/auth/logout");
+    setSession(null);
+  }
+
+  return <AuthContext.Provider value={{ session, loading, login, register, logout }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

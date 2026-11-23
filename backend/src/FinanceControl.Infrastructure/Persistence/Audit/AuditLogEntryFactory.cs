@@ -10,7 +10,7 @@ namespace FinanceControl.Infrastructure.Persistence.Audit;
 /// Constroi AuditLogEntry a partir do ChangeTracker, ANTES do
 /// SaveChangesAsync ser chamado (precisa ler OriginalValue/CurrentValue
 /// enquanto o EF ainda esta rastreando o estado "sujo"). So audita os
-/// aggregates financeiros (Account, Transaction, Invoice, TransferGroup) -
+/// aggregates financeiros (Account, Transaction, Invoice, TransferGroup, Budget, Debt) -
 /// User e Category ficam de fora (nao estao na lista de "alteracoes
 /// financeiras" aprovada na revisao arquitetural).
 /// </summary>
@@ -21,7 +21,9 @@ internal static class AuditLogEntryFactory
         typeof(Account),
         typeof(Transaction),
         typeof(Invoice),
-        typeof(TransferGroup)
+        typeof(TransferGroup),
+        typeof(Budget),
+        typeof(Debt)
     };
 
     private static readonly JsonSerializerOptions JsonOptions = new()

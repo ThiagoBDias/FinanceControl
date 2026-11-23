@@ -1,3 +1,4 @@
+using FinanceControl.Domain.Exceptions;
 using FinanceControl.Application.DTOs;
 using FinanceControl.Application.Interfaces;
 using FinanceControl.Application.Validators;
@@ -33,6 +34,11 @@ public sealed class RegisterIncomeUseCase : IUseCase<RegisterIncomeRequest, Tran
         var account = await _accountRepository.GetByIdAsync(request.AccountId, request.OwnerScopeId, cancellationToken)
             ?? throw new EntityNotFoundException(nameof(Account), request.AccountId);
 
+        if (account.Type == FinanceControl.Domain.Enums.AccountType.CreditCard)
+            throw new OperationRejectedException("Selecione uma conta de saldo para registrar a receita.");
+
+        FinancialDates.ValidatePaymentDate(request.CompetenceDate);
+
         Category? category = null;
         if (request.CategoryId is Guid categoryId)
         {
@@ -43,6 +49,7 @@ public sealed class RegisterIncomeUseCase : IUseCase<RegisterIncomeRequest, Tran
         var transaction = account.RegisterIncome(
             request.Amount, request.CompetenceDate, request.Description, category, request.DueDate);
 
+        transaction.MarkAsPaid(request.CompetenceDate);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return TransactionMapper.ToResponse(transaction);

@@ -10,16 +10,19 @@ public sealed class CreateCreditCardUseCase : IUseCase<CreateCreditCardRequest, 
 {
     private readonly IAccountRepository _accountRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IInvoiceRepository _invoices;
     private readonly IValidator<CreateCreditCardRequest> _validator;
 
     public CreateCreditCardUseCase(
         IAccountRepository accountRepository,
         IUnitOfWork unitOfWork,
+        IInvoiceRepository invoices,
         IValidator<CreateCreditCardRequest> validator)
     {
         _accountRepository = accountRepository;
         _unitOfWork = unitOfWork;
         _validator = validator;
+        _invoices = invoices;
     }
 
     public async Task<AccountResponse> ExecuteAsync(CreateCreditCardRequest request, CancellationToken cancellationToken = default)
@@ -32,6 +35,8 @@ public sealed class CreateCreditCardUseCase : IUseCase<CreateCreditCardRequest, 
         var account = Account.CreateCreditCard(request.OwnerScopeId, request.Name, settings, request.InitialBalance);
 
         await _accountRepository.AddAsync(account, cancellationToken);
+        if (account.InitialBalance > 0)
+            await _invoices.AddAsync(Invoice.ForOpeningBalance(account, FinancialDates.Today), cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return AccountMapper.ToResponse(account);

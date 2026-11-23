@@ -1,5 +1,6 @@
 using FinanceControl.Domain.Enums;
 using FinanceControl.Domain.Exceptions;
+using FinanceControl.Domain.ValueObjects;
 
 namespace FinanceControl.Domain.Entities;
 
@@ -27,6 +28,11 @@ public sealed class Transaction
     public DateOnly CompetenceDate { get; }
     public DateOnly? DueDate { get; }
     public DateOnly? PaymentDate { get; private set; }
+    public bool IsScheduled { get; private set; }
+    public Guid? PurchaseId { get; private set; }
+    public int? InstallmentNumber { get; private set; }
+    public int? InstallmentCount { get; private set; }
+    public bool IsPending => IsScheduled && PaymentDate is null;
     public bool IsDeleted { get; private set; }
     public DateTime? DeletedAt { get; private set; }
 
@@ -107,6 +113,15 @@ public sealed class Transaction
             type, amount, description, competenceDate, dueDate: null, DateTime.UtcNow);
     }
 
+    internal void Schedule() => IsScheduled = true;
+
+    internal void SetInstallment(Guid purchaseId, int number, int count)
+    {
+        PurchaseId = purchaseId;
+        InstallmentNumber = number;
+        InstallmentCount = count;
+    }
+
     public void MarkAsPaid(DateOnly paymentDate)
     {
         PaymentDate = paymentDate;
@@ -125,7 +140,7 @@ public sealed class Transaction
 
     private static void ValidateAmount(decimal amount)
     {
-        if (amount <= 0)
+        if (amount <= 0 || !Money.IsValid(amount))
             throw new InvalidMonetaryAmountException(amount);
     }
 
