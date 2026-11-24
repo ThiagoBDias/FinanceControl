@@ -32,6 +32,6 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
         // Concorrencia otimista via coluna de sistema xmin do Postgres -
         // nenhuma coluna extra e criada (ver estrategia definida na
         // revisao arquitetural, rodada 2).
-        builder.UseXminAsConcurrencyToken();
+        builder.Property<uint>("xmin").IsRowVersion();
     }
 }

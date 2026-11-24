@@ -6,3 +6,30 @@
 
 .secondary-btn,.danger-btn,.icon-btn{border:1px solid #2a3544;border-radius:8px;background:#161e29;color:#cbd5e1;padding:9px 11px;font-size:12px;font-weight:600}.secondary-btn:hover{border-color:#6f5ce7;color:#fff}.danger-btn{border-color:#593039;background:#28191e;color:#ffaaaa}.danger-btn:hover{background:#3a1e25}.row-actions{display:flex;gap:7px;flex-wrap:wrap}.alert.success{position:relative;padding-right:40px;background:#102b22;border:1px solid #20553f;color:#80e0b1}.alert-dismiss{position:absolute;right:10px;top:7px;border:0;background:transparent;color:inherit;font-size:19px}.empty-action{margin-top:17px}.empty-action .primary-btn,.inline-btn{display:inline-flex;align-items:center;justify-content:center}.header-actions{display:flex;align-items:flex-end;gap:10px}.period-control{display:grid;gap:5px;color:#8995a7;font-size:11px}.period-control .input{padding:9px 10px}.modal-backdrop{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:18px;background:#05080dc9;overflow-y:auto}.modal-panel{width:min(520px,100%);max-height:min(90vh,820px);overflow-y:auto;background:#111720;border:1px solid #2b3544;border-radius:15px;padding:21px;box-shadow:0 24px 80px #0009}.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.modal-head h2{margin:0;font-size:18px}.icon-btn{width:34px;height:34px;padding:0;font-size:23px;line-height:1}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:8px}.modal-actions .primary-btn,.modal-actions .secondary-btn{min-width:100px}.form-hint{margin:0;color:#8793a4;font-size:12px;line-height:1.5}.card-meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:13px;color:#8692a4;font-size:11px}.badge-danger{background:#401e25;color:#ffaaaa}.budget-progress.over span{background:#e46775}
 @media(max-width:700px){.header-actions{align-items:stretch;flex-direction:column;width:100%}.modal-panel{padding:17px}.row-actions{min-width:130px}}
+
+.modal-panel { color: inherit; width: min(520px, calc(100% - 24px)); }
+.modal-panel::backdrop { background: #05080dc9; }
+.category-row { align-items: baseline; gap: 12px; }
+.category-row a:hover, .form-hint a:hover { color: #bcb0ff; }
+.category-row strong { flex-shrink: 0; }
+.account-filter { max-width: 300px; margin-bottom: 12px; }
+.transaction-note { display: block; color: #a7b1c1; margin-top: 4px; font-size: 11px; }
+.form .checkbox-label { display: flex; align-items: center; gap: 8px; }
+.debt-list details + details { border-top: 1px solid #1d2733; }
+.debt-list summary { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 14px 0; cursor: pointer; }
+.debt-list summary span::before { content: "▸"; margin-right: 8px; color: #bcb0ff; }
+.debt-list details[open] summary span::before { content: "▾"; }
+.debt-list summary strong { font-size: 13px; text-align: right; }
+.chart-legend { display: flex; gap: 14px; color: #c3ccd8; font-size: 12px; }
+.chart-legend span::before { display: inline-block; margin-right: 5px; content: "●"; color: #62d5a3; }
+.chart-legend span:nth-child(2)::before { color: #ff8c8c; }
+.month-chart { display: grid; gap: 12px; }
+.month-chart-row { display: grid; grid-template-columns: 68px minmax(0, 1fr); align-items: center; gap: 10px; color: #c3ccd8; font-size: 12px; }
+.month-chart-bars { display: grid; gap: 4px; }
+.month-chart-bars > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 7px; }
+.month-chart-bars > div > span { display: block; height: 7px; border-radius: 4px; background: #62d5a3; }
+.month-chart-bars > div:nth-child(2) > span { background: #ff8c8c; }
+.month-chart-bars strong { min-width: 74px; text-align: right; font-variant-numeric: tabular-nums; }
+.dashboard-grid > .panel { min-width: 0; }
+.category-row > a, .category-row > span { overflow-wrap: anywhere; }
+.credit-bottom { margin-top: 30px; }

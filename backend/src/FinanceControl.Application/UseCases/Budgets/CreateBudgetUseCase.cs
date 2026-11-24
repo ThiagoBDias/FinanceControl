@@ -40,7 +40,7 @@ public sealed class CreateBudgetUseCase : IUseCase<CreateBudgetRequest, BudgetRe
         if (request.CategoryId == Guid.Empty) errors.Add(new ValidationError("CategoryId", "CategoryId e obrigatorio."));
         if (request.Year < 2000 || request.Year > 2100) errors.Add(new ValidationError("Year", "Ano invalido."));
         if (request.Month is < 1 or > 12) errors.Add(new ValidationError("Month", "Mes invalido."));
-        if (request.LimitAmount <= 0) errors.Add(new ValidationError("LimitAmount", "LimitAmount deve ser maior que zero."));
+        if ((request.LimitAmount <= 0 || !FinanceControl.Domain.ValueObjects.Money.IsValid(request.LimitAmount))) errors.Add(new ValidationError("LimitAmount", "LimitAmount deve ser maior que zero."));
         if (errors.Count > 0) throw new RequestValidationException(errors);
     }
 }

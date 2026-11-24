@@ -26,6 +26,6 @@ public sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
         // certo, nao um caso de uso legitimo.
         builder.HasIndex(c => new { c.OwnerScopeId, c.Name }).IsUnique();
 
-        builder.UseXminAsConcurrencyToken();
+        builder.Property<uint>("xmin").IsRowVersion();
     }
 }

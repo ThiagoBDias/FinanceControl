@@ -41,7 +41,7 @@ export default function Budgets() {
     event.preventDefault(); setBusy(true); setError("");
     const form = new FormData(event.currentTarget);
     try {
-      await api.post("/budgets", { categoryId: String(form.get("categoryId")), year, month, limitAmount: Number(form.get("limitAmount")) });
+      await api.post("/budgets", { categoryId: String(form.get("categoryId")), year, month, limitAmount: String(form.get("limitAmount")) });
       setCreateOpen(false); setNotice("Orçamento criado com sucesso."); notifyFinanceDataChanged();
     } catch (err) { setError(getErrorMessage(err)); }
     finally { setBusy(false); }
@@ -50,7 +50,7 @@ export default function Budgets() {
     event.preventDefault(); if (!editing) return; setBusy(true); setError("");
     const form = new FormData(event.currentTarget);
     try {
-      await api.put(`/budgets/${editing.id}`, { limitAmount: Number(form.get("limitAmount")) });
+      await api.put(`/budgets/${editing.id}`, { limitAmount: String(form.get("limitAmount")) });
       setEditing(null); setNotice("Limite atualizado."); notifyFinanceDataChanged();
     } catch (err) { setError(getErrorMessage(err)); }
     finally { setBusy(false); }

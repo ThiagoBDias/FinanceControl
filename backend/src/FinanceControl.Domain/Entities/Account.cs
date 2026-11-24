@@ -84,7 +84,7 @@ public sealed class Account
 
         var normalizedName = NormalizeName(name);
 
-        if (initialBalance < 0)
+        if (!Money.IsValid(initialBalance))
             throw new InvalidMonetaryAmountException(initialBalance);
 
         return new Account(Guid.NewGuid(), ownerScopeId, normalizedName, type, initialBalance, creditCardSettings: null, DateTime.UtcNow);
@@ -97,7 +97,7 @@ public sealed class Account
 
         var normalizedName = NormalizeName(name);
 
-        if (initialBalance < 0)
+        if (!Money.IsValid(initialBalance))
             throw new InvalidMonetaryAmountException(initialBalance);
 
         return new Account(Guid.NewGuid(), ownerScopeId, normalizedName, AccountType.CreditCard, initialBalance, settings, DateTime.UtcNow);
@@ -137,7 +137,11 @@ public sealed class Account
         string description,
         Category? category = null,
         DateOnly? dueDate = null,
-        Guid? invoiceId = null)
+        Guid? invoiceId = null,
+        bool scheduled = false,
+        Guid? purchaseId = null,
+        int installmentNumber = 1,
+        int installmentCount = 1)
     {
         EnsureActive();
 
@@ -153,8 +157,28 @@ public sealed class Account
         var transaction = Transaction.CreateSimple(
             OwnerScopeId, Id, category?.Id, invoiceId, TransactionType.Expense, amount, description, competenceDate, dueDate);
 
+        if (scheduled)
+            transaction.Schedule();
+        if (purchaseId is Guid purchase)
+            transaction.SetInstallment(purchase, installmentNumber, installmentCount);
         AttachTransaction(transaction);
         return transaction;
+    }
+
+    public void SettleExpense(Transaction transaction, DateOnly paymentDate)
+    {
+        EnsureActive();
+        if (transaction.AccountId != Id || !transaction.IsPending || transaction.Type != TransactionType.Expense)
+            throw new OperationRejectedException("Este lançamento não está pendente.");
+        transaction.MarkAsPaid(paymentDate);
+        RefreshBalance();
+    }
+
+    public void RefreshBalance()
+    {
+        CachedBalance = CalculatedBalance;
+        CachedBalanceUpdatedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
     }
 
     public Transaction RegisterIncome(
@@ -201,9 +225,11 @@ public sealed class Account
         decimal amount,
         Guid transferGroupId,
         DateOnly competenceDate,
-        string? description)
+        string? description,
+        bool settlingInvoice = false)
     {
-        EnsureActive();
+        if (!settlingInvoice)
+            EnsureActive();
 
         var transaction = Transaction.CreateTransferLeg(
             OwnerScopeId, Id, TransactionType.TransferIn, amount, description, competenceDate, transferGroupId);
@@ -219,7 +245,7 @@ public sealed class Account
         // CachedBalance e mantido incrementalmente (mesma formula de
         // CalculatedBalance) apenas por performance - CalculatedBalance
         // continua sendo a fonte da verdade, recalculada do zero.
-        CachedBalance += SignedEffect(transaction);
+        CachedBalance = CalculatedBalance;
         CachedBalanceUpdatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
@@ -255,7 +281,7 @@ public sealed class Account
     /// arquitetural): Income/Expense/TransferIn/TransferOut tem efeito
     /// oposto em contas Asset vs. Liability.
     /// </summary>
-    private decimal SignedEffect(Transaction transaction) => (transaction.Type, IsLiability) switch
+    private decimal SignedEffect(Transaction transaction) => transaction.IsPending ? 0m : (transaction.Type, IsLiability) switch
     {
         (TransactionType.Income, false) => transaction.Amount,
         (TransactionType.Expense, false) => -transaction.Amount,

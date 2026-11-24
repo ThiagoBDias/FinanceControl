@@ -58,6 +58,7 @@ public sealed class TransactionRepository : ITransactionRepository
             .Where(t => t.OwnerScopeId == ownerScopeId
                      && t.CategoryId == categoryId
                      && t.Type == TransactionType.Expense
+                     && (!t.IsScheduled || t.PaymentDate != null)
                      && t.CompetenceDate >= from
                      && t.CompetenceDate <= to)
             .SumAsync(t => (decimal?)t.Amount, cancellationToken) ?? 0m;
@@ -73,4 +74,8 @@ public sealed class TransactionRepository : ITransactionRepository
             .Where(t => t.InvoiceId == invoiceId && t.Type == TransactionType.Expense)
             .SumAsync(t => (decimal?)t.Amount, cancellationToken) ?? 0m;
     }
+    public async Task<IReadOnlyList<Transaction>> ListPendingExpensesAsync(Guid owner, CancellationToken cancellationToken) =>
+        await _context.Transactions.AsNoTracking()
+            .Where(t => t.OwnerScopeId == owner && t.IsScheduled && t.PaymentDate == null && t.DueDate != null)
+            .ToListAsync(cancellationToken);
 }

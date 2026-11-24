@@ -32,9 +32,12 @@ internal static class InvoicePeriodResolver
 
     public static DateOnly ResolveDueDate(DateOnly closingDate, int dueDay)
     {
-        var fallsInSameMonth = dueDay > closingDate.Day;
-        var targetMonth = fallsInSameMonth ? closingDate : closingDate.AddMonths(1);
-        var day = Math.Min(dueDay, DateTime.DaysInMonth(targetMonth.Year, targetMonth.Month));
-        return new DateOnly(targetMonth.Year, targetMonth.Month, day);
+        var day = Math.Min(dueDay, DateTime.DaysInMonth(closingDate.Year, closingDate.Month));
+        var candidate = new DateOnly(closingDate.Year, closingDate.Month, day);
+        if (candidate > closingDate)
+            return candidate;
+
+        var next = new DateOnly(closingDate.Year, closingDate.Month, 1).AddMonths(1);
+        return next.AddDays(Math.Min(dueDay, DateTime.DaysInMonth(next.Year, next.Month)) - 1);
     }
 }

@@ -61,6 +61,6 @@ public sealed class AccountConfiguration : IEntityTypeConfiguration<Account>
         // Regra obrigatoria: OwnerScopeId indexado.
         builder.HasIndex(a => a.OwnerScopeId);
 
-        builder.UseXminAsConcurrencyToken();
+        builder.Property<uint>("xmin").IsRowVersion();
     }
 }

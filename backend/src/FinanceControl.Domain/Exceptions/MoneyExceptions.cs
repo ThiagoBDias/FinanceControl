@@ -7,7 +7,7 @@ namespace FinanceControl.Domain.Exceptions;
 public sealed class InvalidMonetaryAmountException : DomainException
 {
     public InvalidMonetaryAmountException(decimal amount)
-        : base($"O valor monetario deve ser maior que zero. Valor informado: {amount}.")
+        : base($"Valor monetário inválido. Informe até duas casas decimais dentro do intervalo permitido. Valor informado: {amount}.")
     {
     }
 }

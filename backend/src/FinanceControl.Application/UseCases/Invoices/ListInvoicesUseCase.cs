@@ -24,7 +24,7 @@ public sealed class ListInvoicesUseCase : IUseCase<ListInvoicesRequest, IReadOnl
         {
             // N+1 aceitavel no MVP (poucas faturas por conta); pode virar
             // uma unica query com agregacao quando a Infrastructure existir.
-            var totalAmount = await _transactionRepository.GetInvoiceTotalAsync(invoice.Id, cancellationToken);
+            var totalAmount = invoice.OpeningAmount + await _transactionRepository.GetInvoiceTotalAsync(invoice.Id, cancellationToken);
             responses.Add(InvoiceMapper.ToResponse(invoice, totalAmount));
         }
 

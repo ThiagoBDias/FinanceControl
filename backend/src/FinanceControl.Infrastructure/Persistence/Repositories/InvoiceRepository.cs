@@ -17,14 +17,13 @@ public sealed class InvoiceRepository : IInvoiceRepository
             .SingleOrDefaultAsync(i => i.Id == invoiceId && i.OwnerScopeId == ownerScopeId, cancellationToken);
     }
 
-    public async Task<Invoice?> GetOpenInvoiceAsync(Guid creditCardAccountId, int periodYear, int periodMonth, CancellationToken cancellationToken = default)
+    public async Task<Invoice?> GetPeriodInvoiceAsync(Guid creditCardAccountId, int periodYear, int periodMonth, CancellationToken cancellationToken = default)
     {
         return await _context.Invoices
             .SingleOrDefaultAsync(
                 i => i.CreditCardAccountId == creditCardAccountId
                      && i.PeriodYear == periodYear
-                     && i.PeriodMonth == periodMonth
-                     && i.Status == InvoiceStatus.Open,
+                     && i.PeriodMonth == periodMonth,
                 cancellationToken);
     }
 

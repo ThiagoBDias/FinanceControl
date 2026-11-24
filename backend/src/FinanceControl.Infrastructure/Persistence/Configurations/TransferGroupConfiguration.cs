@@ -35,6 +35,8 @@ public sealed class TransferGroupConfiguration : IEntityTypeConfiguration<Transf
             .OnDelete(DeleteBehavior.Restrict);
 
 
+        builder.Property(g => g.InvoiceId);
+        builder.HasOne<Invoice>().WithMany().HasForeignKey(g => g.InvoiceId).OnDelete(DeleteBehavior.Restrict);
         builder.HasIndex(g => g.OwnerScopeId);
         builder.HasIndex(g => g.SourceAccountId);
         builder.HasIndex(g => g.DestinationAccountId);

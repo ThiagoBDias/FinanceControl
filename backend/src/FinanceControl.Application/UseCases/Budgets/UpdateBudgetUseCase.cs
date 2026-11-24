@@ -15,7 +15,7 @@ public sealed class UpdateBudgetUseCase : IUseCase<UpdateBudgetRequest, BudgetRe
 
     public async Task<BudgetResponse> ExecuteAsync(UpdateBudgetRequest request, CancellationToken cancellationToken = default)
     {
-        if (request.OwnerScopeId == Guid.Empty || request.BudgetId == Guid.Empty || request.LimitAmount <= 0)
+        if (request.OwnerScopeId == Guid.Empty || request.BudgetId == Guid.Empty || (request.LimitAmount <= 0 || !FinanceControl.Domain.ValueObjects.Money.IsValid(request.LimitAmount)))
             throw new RequestValidationException(new[] { new ValidationError("Request", "OwnerScopeId, BudgetId e um limite maior que zero sao obrigatorios.") });
         var budget = await _budgetRepository.GetByIdAsync(request.BudgetId, request.OwnerScopeId, cancellationToken)
             ?? throw new RequestValidationException(new[] { new ValidationError("BudgetId", "Orcamento nao encontrado.") });

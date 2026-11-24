@@ -22,7 +22,7 @@ public sealed class CreditCardSettings : IEquatable<CreditCardSettings>
 
     public static CreditCardSettings Create(decimal creditLimit, int closingDay, int dueDay)
     {
-        if (creditLimit < 0)
+        if (!Money.IsValid(creditLimit))
             throw new InvalidCreditCardSettingsException("O limite do cartao nao pode ser negativo.");
 
         if (closingDay is < 1 or > 31)

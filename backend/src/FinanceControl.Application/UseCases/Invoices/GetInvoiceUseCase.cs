@@ -21,7 +21,7 @@ public sealed class GetInvoiceUseCase : IUseCase<GetInvoiceRequest, InvoiceRespo
         var invoice = await _invoiceRepository.GetByIdAsync(request.InvoiceId, request.OwnerScopeId, cancellationToken)
             ?? throw new EntityNotFoundException(nameof(Invoice), request.InvoiceId);
 
-        var totalAmount = await _transactionRepository.GetInvoiceTotalAsync(invoice.Id, cancellationToken);
+        var totalAmount = invoice.OpeningAmount + await _transactionRepository.GetInvoiceTotalAsync(invoice.Id, cancellationToken);
 
         return InvoiceMapper.ToResponse(invoice, totalAmount);
     }

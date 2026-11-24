@@ -24,6 +24,8 @@ public sealed class Invoice
     public DateOnly ClosingDate { get; }
     public DateOnly DueDate { get; }
     public InvoiceStatus Status { get; private set; }
+    public decimal OpeningAmount { get; private set; }
+    public decimal PaidAmount { get; private set; }
     public DateTime CreatedAt { get; }
     public DateTime UpdatedAt { get; private set; }
 
@@ -63,11 +65,29 @@ public sealed class Invoice
         return new Invoice(Guid.NewGuid(), ownerScopeId, creditCardAccountId, periodYear, periodMonth, closingDate, dueDate, DateTime.UtcNow);
     }
 
+    public static Invoice ForOpeningBalance(Account card, DateOnly date)
+    {
+        var invoice = Open(card.OwnerScopeId, card.Id, 1, 1, date, date);
+        invoice.OpeningAmount = card.InitialBalance;
+        invoice.Close();
+        return invoice;
+    }
+
     /// <summary>Fecha a fatura (deixa de aceitar novas compras no periodo).</summary>
     public void Close()
     {
         EnsureTransition(InvoiceStatus.Closed);
         Status = InvoiceStatus.Closed;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Pay(decimal amount, decimal total)
+    {
+        if (amount <= 0 || !FinanceControl.Domain.ValueObjects.Money.IsValid(amount) || amount > total - PaidAmount)
+            throw new OperationRejectedException("O pagamento deve ser positivo e não pode superar o saldo da fatura.");
+        if (Status != InvoiceStatus.Closed)
+            throw new OperationRejectedException("Feche a fatura antes de registrar o pagamento.");
+        PaidAmount += amount;
         UpdatedAt = DateTime.UtcNow;
     }
 

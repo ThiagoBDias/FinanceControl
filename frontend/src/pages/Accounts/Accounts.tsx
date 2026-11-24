@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import api, { getErrorMessage } from "../../services/api";
 import { notifyFinanceDataChanged, onFinanceDataChanged } from "../../services/financeEvents";
@@ -31,8 +32,8 @@ export default function Accounts() {
     event.preventDefault(); setBusy(true); setError("");
     const form = new FormData(event.currentTarget);
     try {
-      await api.post("/accounts", { name: String(form.get("name")).trim(), type: Number(form.get("type")), initialBalance: Number(form.get("initialBalance")) });
-      setEditing(null); setNotice("Conta criada com sucesso."); notifyFinanceDataChanged();
+      await api.post("/accounts", { name: String(form.get("name")).trim(), type: Number(form.get("type")), initialBalance: String(form.get("initialBalance")) });
+      setCreateOpen(false); setNotice("Conta criada com sucesso."); notifyFinanceDataChanged();
     } catch (err) { setError(getErrorMessage(err)); }
     finally { setBusy(false); }
   }
@@ -57,10 +58,10 @@ export default function Accounts() {
     {notice && <div className="alert success" role="status">{notice}<button className="alert-dismiss" onClick={() => setNotice("")}>×</button></div>}
     {error && <div className="alert error" role="alert">{error}</div>}
     <div className="panel">{loading ? <Loading /> : items.length ? <div className="table-wrap"><table><thead><tr><th>Nome</th><th>Tipo</th><th>Saldo inicial</th><th>Saldo atual</th><th>Status</th><th>Ações</th></tr></thead><tbody>{items.map(account =>
-      <tr key={account.id}><td>{account.name}</td><td>{accountType[String(account.type)] ?? account.type}</td><td className="money">{money(account.initialBalance)}</td><td className="money">{money(account.calculatedBalance)}</td><td><span className="badge">{account.isActive ? "Ativa" : "Inativa"}</span></td><td><div className="row-actions"><button className="secondary-btn" onClick={() => { setError(""); setEditing(account); }}>Editar</button>{account.isActive && <button className="danger-btn" onClick={() => void deactivate(account)}>Desativar</button>}</div></td></tr>)}</tbody></table></div> : <EmptyState title="Nenhuma conta" description="Cadastre sua primeira conta para começar." action={<button className="primary-btn" onClick={() => setCreateOpen(true)}>+ Nova conta</button>} />}</div>
+      <tr key={account.id}><td>{account.name}</td><td>{accountType[String(account.type)] ?? account.type}</td><td className="money">{money(account.initialBalance)}</td><td className="money">{money(account.calculatedBalance)}</td><td><span className="badge">{account.isActive ? "Ativa" : "Inativa"}</span></td><td><div className="row-actions"><Link className="secondary-btn" to={`/transactions?accountId=${account.id}`}>Histórico</Link><button className="secondary-btn" onClick={() => { setError(""); setEditing(account); }}>Editar</button>{account.isActive && <button className="danger-btn" onClick={() => void deactivate(account)}>Desativar</button>}</div></td></tr>)}</tbody></table></div> : <EmptyState title="Nenhuma conta" description="Cadastre sua primeira conta para começar." action={<button className="primary-btn" onClick={() => setCreateOpen(true)}>+ Nova conta</button>} />}</div>
     {createOpen && <Modal title="Nova conta" onClose={() => setCreateOpen(false)} onSubmit={createAccount} busy={busy} error={error}>
       <label>Nome<input className="input" name="name" required maxLength={100} autoFocus /></label>
-      <label>Tipo<select className="input" name="type" required defaultValue="1"><option value="1">Conta corrente</option><option value="2">Poupança</option><option value="3">Dinheiro</option></select></label>
+      <label>Tipo<select className="input" name="type" required defaultValue="1"><option value="1">Conta corrente</option><option value="2">Poupança</option><option value="3">Dinheiro</option><option value="5">Investimento</option></select></label>
       <label>Saldo inicial<input className="input" name="initialBalance" type="number" min="0" step="0.01" required defaultValue="0" /></label>
     </Modal>}
     {editing && <Modal title="Editar conta" onClose={() => setEditing(null)} onSubmit={renameAccount} busy={busy} error={error}>

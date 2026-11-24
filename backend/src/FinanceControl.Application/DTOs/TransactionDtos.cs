@@ -25,7 +25,9 @@ public sealed record RegisterExpenseRequest(
     DateOnly CompetenceDate,
     string Description,
     Guid? CategoryId,
-    DateOnly? DueDate);
+    DateOnly? DueDate,
+    int InstallmentCount = 1,
+    bool Scheduled = false);
 
 public sealed record GetTransactionRequest(Guid OwnerScopeId, Guid TransactionId);
 
@@ -52,7 +54,11 @@ public sealed record TransactionResponse(
     DateOnly? DueDate,
     DateOnly? PaymentDate,
     DateTime CreatedAt,
-    DateTime UpdatedAt);
+    DateTime UpdatedAt,
+    bool IsPending,
+    Guid? PurchaseId,
+    int? InstallmentNumber,
+    int? InstallmentCount);
 
 internal static class TransactionMapper
 {
@@ -60,5 +66,6 @@ internal static class TransactionMapper
         transaction.Id, transaction.OwnerScopeId, transaction.AccountId, transaction.CategoryId,
         transaction.InvoiceId, transaction.TransferGroupId, transaction.Type, transaction.Amount,
         transaction.Description, transaction.CompetenceDate, transaction.DueDate, transaction.PaymentDate,
-        transaction.CreatedAt, transaction.UpdatedAt);
+        transaction.CreatedAt, transaction.UpdatedAt, transaction.IsPending,
+        transaction.PurchaseId, transaction.InstallmentNumber, transaction.InstallmentCount);
 }

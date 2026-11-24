@@ -28,4 +28,8 @@ public sealed class InvoicesController : ControllerBase
     public async Task<ActionResult<InvoiceResponse>> Close(
         Guid id, [FromServices] CloseInvoiceUseCase useCase, CancellationToken cancellationToken)
         => Ok(await useCase.ExecuteAsync(new CloseInvoiceRequest(User.GetCurrentUserId(), id), cancellationToken));
+
+    [HttpPost("{id:guid}/payments")]
+    public Task<InvoiceResponse> Pay(Guid id, PayInvoiceRequest request, [FromServices] PayInvoiceUseCase useCase, CancellationToken cancellationToken) =>
+        useCase.ExecuteAsync(request with { OwnerScopeId = User.GetCurrentUserId(), InvoiceId = id }, cancellationToken);
 }

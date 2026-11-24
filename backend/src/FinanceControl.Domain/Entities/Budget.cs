@@ -33,7 +33,7 @@ public sealed class Budget
 
     public void ChangeLimit(decimal limitAmount)
     {
-        if (limitAmount <= 0)
+        if (limitAmount <= 0 || !FinanceControl.Domain.ValueObjects.Money.IsValid(limitAmount))
             throw new ArgumentOutOfRangeException(nameof(limitAmount), "O limite deve ser maior que zero.");
 
         LimitAmount = limitAmount;
@@ -46,7 +46,7 @@ public sealed class Budget
             throw new ArgumentOutOfRangeException(nameof(year), "Ano invalido.");
         if (month is < 1 or > 12)
             throw new ArgumentOutOfRangeException(nameof(month), "Mes invalido.");
-        if (limitAmount <= 0)
+        if (limitAmount <= 0 || !FinanceControl.Domain.ValueObjects.Money.IsValid(limitAmount))
             throw new ArgumentOutOfRangeException(nameof(limitAmount), "O limite deve ser maior que zero.");
     }
 }

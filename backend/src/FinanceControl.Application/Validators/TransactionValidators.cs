@@ -14,14 +14,14 @@ public sealed class RegisterIncomeRequestValidator : IValidator<RegisterIncomeRe
         if (request.AccountId == Guid.Empty)
             errors.Add(new ValidationError(nameof(request.AccountId), "AccountId e obrigatorio."));
 
-        if (request.Amount <= 0)
-            errors.Add(new ValidationError(nameof(request.Amount), "O valor deve ser maior que zero."));
+        if (request.Amount <= 0 || !FinanceControl.Domain.ValueObjects.Money.IsValid(request.Amount))
+            errors.Add(new ValidationError(nameof(request.Amount), "Informe um valor positivo de até duas casas decimais."));
 
         if (request.CompetenceDate == default)
             errors.Add(new ValidationError(nameof(request.CompetenceDate), "A data de competencia e obrigatoria."));
 
-        if (string.IsNullOrWhiteSpace(request.Description))
-            errors.Add(new ValidationError(nameof(request.Description), "A descricao e obrigatoria."));
+        if (string.IsNullOrWhiteSpace(request.Description) || request.Description.Trim().Length > 500)
+            errors.Add(new ValidationError(nameof(request.Description), "Informe uma descrição de até 500 caracteres."));
 
         if (request.CategoryId is Guid categoryId && categoryId == Guid.Empty)
             errors.Add(new ValidationError(nameof(request.CategoryId), "CategoryId informado e invalido."));
@@ -42,14 +42,14 @@ public sealed class RegisterExpenseRequestValidator : IValidator<RegisterExpense
         if (request.AccountId == Guid.Empty)
             errors.Add(new ValidationError(nameof(request.AccountId), "AccountId e obrigatorio."));
 
-        if (request.Amount <= 0)
-            errors.Add(new ValidationError(nameof(request.Amount), "O valor deve ser maior que zero."));
+        if (request.Amount <= 0 || !FinanceControl.Domain.ValueObjects.Money.IsValid(request.Amount))
+            errors.Add(new ValidationError(nameof(request.Amount), "Informe um valor positivo de até duas casas decimais."));
 
         if (request.CompetenceDate == default)
             errors.Add(new ValidationError(nameof(request.CompetenceDate), "A data de competencia e obrigatoria."));
 
-        if (string.IsNullOrWhiteSpace(request.Description))
-            errors.Add(new ValidationError(nameof(request.Description), "A descricao e obrigatoria."));
+        if (string.IsNullOrWhiteSpace(request.Description) || request.Description.Trim().Length > 500)
+            errors.Add(new ValidationError(nameof(request.Description), "Informe uma descrição de até 500 caracteres."));
 
         if (request.CategoryId is Guid categoryId && categoryId == Guid.Empty)
             errors.Add(new ValidationError(nameof(request.CategoryId), "CategoryId informado e invalido."));
